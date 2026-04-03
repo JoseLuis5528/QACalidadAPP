@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Login con Firebase - Espacios listos para conectar</title>
+  <!-- Google Fonts para tipografía moderna -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <!-- Font Awesome 6 (íconos) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Firebase App (núcleo) -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+
+<!-- Firebase servicios que necesites -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+
+
+<script>
+    // Configuración de tu proyecto Firebase
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBnFEAidKBWHaNCqUE4CAGlNtj6ybLdpoc",
+  authDomain: "pagina-web-9cb53.firebaseapp.com",
+  projectId: "pagina-web-9cb53",
+  storageBucket: "pagina-web-9cb53.firebasestorage.app",
+  messagingSenderId: "1072705733316",
+  appId: "1:1072705733316:web:4dbb3f7ecdf86544f8ff91",
+  measurementId: "G-CVMJZWQ863"
+};
+
+// Inicializa Firebase
+const app = firebase.initializeApp(firebaseConfig);
+
+// Ejemplo: inicializar Firestore
+const db = firebase.firestore();
+</script>
+  
+  
+  
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 480px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      border-radius: 2rem;
+      padding: 2rem 1.8rem 2.2rem;
+      box-shadow: 0 25px 45px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      transition: transform 0.2s ease;
+    }
+
+    .login-container:hover {
+      transform: scale(1.01);
+    }
+
+    .logo-area {
+      text-align: center;
+      margin-bottom: 1.8rem;
+    }
+
+    .logo-icon {
+      font-size: 3.2rem;
+      background: linear-gradient(120deg, #60a5fa, #a78bfa);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ffffff, #cbd5e6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.3px;
+    }
+
+    .sub {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-top: 0.4rem;
+      font-weight: 500;
+    }
+
+    .input-group {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .input-group i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #64748b;
+      font-size: 1.1rem;
+      transition: color 0.2s;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 0.9rem 1rem 0.9rem 2.8rem;
+      background: #1e293b;
+      border: 1.5px solid #334155;
+      border-radius: 1.2rem;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #f1f5f9;
+      transition: all 0.25s;
+      outline: none;
+      font-family: 'Inter', monospace;
+    }
+
+    .input-group input:focus {
+      border-color: #818cf8;
+      background: #0f172a;
+      box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.3);
+    }
+
+    .input-group input::placeholder {
+      color: #5b6e8c;
+      font-weight: 400;
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      transition: color 0.2s;
+    }
+
+    .toggle-password:hover {
+      color: #cbd5e6;
+    }
+
+    .btn-login {
+      width: 100%;
+      background: linear-gradient(95deg, #4f46e5, #7c3aed);
+      border: none;
+      padding: 0.9rem;
+      border-radius: 1.4rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      transition: all 0.25s;
+      margin-top: 0.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-family: 'Inter', sans-serif;
+      box-shadow: 0 6px 14px rgba(79, 70, 229, 0.3);
+    }
+
+    .btn-login:hover {
+      background: linear-gradient(95deg, #6366f1, #8b5cf6);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 20px rgba(79, 70, 229, 0.4);
+    }
+
+    .btn-login:active {
+      transform: translateY(1px);
+    }
+
+    .auth-switch {
+      text-align: center;
+      margin-top: 1.6rem;
+      color: #cbd5e6;
+      font-size: 0.85rem;
+    }
+
+    .auth-switch a {
+      color: #a5b4fc;
+      text-decoration: none;
+      font-weight: 600;
+      margin-left: 0.3rem;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .auth-switch a:hover {
+      color: #c7d2fe;
+      text-decoration: underline;
+    }
+
+    .status-message {
+      margin-top: 1.2rem;
+      padding: 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.85rem;
+      text-align: center;
+      font-weight: 500;
+      transition: all 0.2s;
+      display: none;
+    }
+
+    .status-message.error {
+      background: rgba(220, 38, 38, 0.2);
+      border-left: 4px solid #ef4444;
+      color: #fecaca;
+      display: block;
+    }
+
+    .status-message.success {
+      background: rgba(34, 197, 94, 0.2);
+      border-left: 4px solid #4ade80;
+      color: #bbf7d0;
+      display: block;
+    }
+
+    .status-message.info {
+      background: rgba(59, 130, 246, 0.2);
+      border-left: 4px solid #60a5fa;
+      color: #bfdbfe;
+      display: block;
+    }
+
+    .firebase-placeholder {
+      background: #0f172a80;
+      border-radius: 1rem;
+      padding: 0.5rem 0.8rem;
+      margin-bottom: 1.2rem;
+      font-size: 0.7rem;
+      font-family: monospace;
+      text-align: center;
+      color: #5ee0fa;
+      border: 1px dashed #3b82f680;
+      letter-spacing: 0.3px;
+    }
+
+    .firebase-placeholder i {
+      margin-right: 5px;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.7rem;
+      color: #475569;
+      margin-top: 1.8rem;
+    }
+
+    @media (max-width: 500px) {
+      .login-container {
+        padding: 1.5rem;
+      }
+      h1 {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+
+
+
+</head>
+
+
+<body>
+
+<div class="login-container">
+  <div class="logo-area">
+    <div class="logo-icon">
+      <i class="fas fa-fire"></i><i class="fas fa-database"></i>
+    </div>
+    <h1>FireAuth</h1>
+    <div class="sub">Acceso seguro + Firebase Ready</div>
+  </div>
+
+  <!-- 🔥 INDICADOR VISUAL: ZONA LISTA PARA CONECTAR FIREBASE 🔥 -->
+  <div class="firebase-placeholder">
+    <i class="fas fa-plug"></i> · ESPACIOS PREPARADOS PARA FIREBASE · 
+    <i class="fas fa-code-branch"></i> (config / auth / signIn / createUser)
+  </div>
+
+  <!-- Formulario de login / registro dinámico -->
+  <form id="authForm">
+    <div class="input-group">
+      <i class="fas fa-envelope"></i>
+      <input type="email" id="emailInput" placeholder="correo@ejemplo.com" autocomplete="email" required>
+    </div>
+    <div class="input-group">
+      <i class="fas fa-lock"></i>
+      <div class="password-wrapper">
+        <input type="password" id="passwordInput" placeholder="Contraseña" autocomplete="current-password" required>
+        <button type="button" class="toggle-password" id="togglePasswordBtn" aria-label="Mostrar contraseña">
+          <i class="fas fa-eye-slash"></i>
+        </button>
+      </div>
+    </div>
+
+    <button type="submit" class="btn-login" id="actionBtn">
+      <i class="fas fa-sign-in-alt"></i> <span id="btnText">Iniciar sesión</span>
+    </button>
+  </form>
+
+  <div class="auth-switch">
+    <span id="toggleText">¿No tienes cuenta?</span>
+    <a id="toggleModeLink">Crear cuenta nueva</a>
+  </div>
+
+  <!-- Área de mensajes (feedback visual) -->
+  <div id="statusMessage" class="status-message"></div>
+  <footer>
+    <i class="fas fa-shield-alt"></i> Demo lista para Firebase Auth
+  </footer>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
